@@ -21,7 +21,10 @@ function hm_tz_user_profile_fields(){
 					</tr>';
 	$input_text = '<input type="text" name="%1$s" id="%1$s" value="%2$s"/>';
 
-
+//	var_dump(hm_tz_geoip_lookup('87.81.222.178'));
+//	var_dump(hm_tz_geoip_lookup('213.46.29.101'));       //nl
+//	var_dump(hm_tz_geoip_lookup('206.205.89.138'));       //   us
+	var_dump(hm_tz_geoip_lookup('27.122.12.78'));       //   noel
 	hm_tz_timezone_settings($user_id, $table_row, $input_text);
 	hm_tz_workhours_settings($user_id, $table_row, $input_text);
 }
@@ -34,7 +37,7 @@ function hm_tz_timezone_settings($user_id, $table_row, $input_text){
 		'manual' => 'Manual'
 	);
 
-	apply_filters( 'hm_tz_set_method_array', $hm_tz_set_method_array );
+	$hm_tz_set_method_array = apply_filters( 'hm_tz_set_method_array', $hm_tz_set_method_array );
 
 	// only need to display set method if there is more than one option
 	if(1 < count($hm_tz_set_method_array)){

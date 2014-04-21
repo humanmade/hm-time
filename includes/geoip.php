@@ -4,23 +4,21 @@ add_filter('hm_tz_set_method_array', 'hm_tz_geoip_options', 10, 1 );
 
 function hm_tz_geoip_options($hm_tz_set_method_array){
 	$hm_tz_set_method_array['geoip'] = 'Geo IP';
+	var_dump($hm_tz_set_method_array);
+	return $hm_tz_set_method_array;
 }
 
 add_filter( 'hm_tz_save_options', 'hm_tz_geoip_save', 10, 1 );
 
-function hm_tz_geoip_save($user_id, $_POST){
+function hm_tz_geoip_save($user_id){
 	if ( 'geoip' == $POST['hm_tz_set_method'] ) {
-		$hm_tz_new_timezone = tz_ip_lookup('87.81.222.178'); // Test IP address
+		$hm_tz_new_timezone = hm_tz_geoip_lookup('87.81.222.178'); // Test IP address
 	}
 
 	return $hm_tz_new_timezone;
 }
 
-function hm_tz_geoip_lookup($user_id = null, $hostname = null){
-
-	if(empty($user_id)){
-		$user_id = get_current_user_id();
-	}
+function hm_tz_geoip_lookup($hostname = null){
 
 	if(empty($hostname)){
 		if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
@@ -37,5 +35,11 @@ function hm_tz_geoip_lookup($user_id = null, $hostname = null){
 
 	$timezone = geoip_time_zone_by_country_and_region($country_code, $region_code);
 
+	if(empty($timezone)){
+		if(empty($region_code)){
+			// put in proper error codes
+			return 'No Region Code available';
+		}
+	}
 	return $timezone;
 }
