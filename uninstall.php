@@ -7,3 +7,4 @@ if(!defined('WP_UNINSTALL_PLUGIN')){
 
 // Delete any settings or options saved into the DB
 
+delete_option('hm_tz_options');
