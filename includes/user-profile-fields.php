@@ -62,7 +62,7 @@ function hm_time_user_profile_fields(){
 
 	// Set timezone manually
 	$hm_tz_manual_value = get_user_meta($user_id, 'hm_tz_timezone', true);
-	$locations = tz_locations();
+	$locations = hm_tz_locations();
 	$hm_tz_manual_inputs = '';
 	foreach($locations as $lkey => $lvalue){
 		$hm_tz_manual_inputs .= '<optgroup label="'.$lkey.'">';
@@ -79,6 +79,7 @@ function hm_time_user_profile_fields(){
 	printf($table_row, 'hm_tz_timezone', __('Manual Selection'), $hm_tz_manual, __('Please select your timezone'));
 
 	echo '</table>';
+
 }
 
 add_action( 'personal_options_update', 'hm_time_save_profile_fields' );
@@ -88,21 +89,19 @@ function hm_time_save_profile_fields( $user_id ) {
 
 	if ( !current_user_can( 'edit_user', $user_id ) ) { return false; }
 
-	update_user_meta( $user_id, 'hm_tz_foursquare_id', $_POST['hm_tz_foursquare_id'] );
-	update_user_meta( $user_id, 'hm_tz_set_method', $_POST['hm_tz_set_method'] );
-
-	if ( 'geoip' == $POST['hm_tz_set_method'] ) {
-		$hm_tz_new_timezone = tz_ip_lookup('87.81.222.178'); // Test IP address
+	if(isset($_POST['hm_tz_set_method']) && !empty($_POST['hm_tz_set_method'])){
+		update_user_meta( $user_id, 'hm_tz_set_method', $_POST['hm_tz_set_method'] );
 	}
 
-	if(isset($_POST['hm_tz_timezone']) && 'manual' == $_POST['hm_tz_set_method']){
-		$hm_tz_new_timezone = $_POST['hm_tz_timezone'];
-	}
+	$hm_tz_new_timezone = $_POST['hm_tz_timezone'];
+
+	apply_filters( 'hm_tz_save_options', $user_id, $_POST );
+
 	update_user_meta( $user_id, 'hm_tz_timezone', $hm_tz_new_timezone );
 }
 
 
-function tz_locations(){
+function hm_tz_locations(){
 	$zones = timezone_identifiers_list();
 	$locations = array();
 	foreach ($zones as $zone)

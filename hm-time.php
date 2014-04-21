@@ -33,7 +33,7 @@ register_deactivation_hook(__FILE__, 'hm_time_uninstall');
 
 function hm_time_install(){
 	$hm_tz_options = array(
-		'default_set_method' => 'manual';
+		'default_set_method' => 'manual'
 	);
 
 	update_option('hm_tz_options', $hm_tz_options);
@@ -42,5 +42,8 @@ function hm_time_install(){
 function hm_time_uninstall(){
 
 }
+require_once('includes/user-profile-fields.php');
 
-include('includes/user-profile-fields.php');
+if(extension_loaded('geoip')){
+	require_once('includes/geoip.php');
+}
