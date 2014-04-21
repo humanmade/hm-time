@@ -25,33 +25,40 @@ function hm_time_user_profile_fields(){
 	$input_text = '<input type="text" name="%1$s" id="%1$s" value="%2$s"/>';
 
 	// Set Timezone Entry Method Fields
-	$hm_tz_set_method_input = '<p><label><input type="radio" name="%1$s" value="%2$s" %3$s/> %4$s</label></p>';
-	$hm_tz_set_method_value = get_user_meta($user_id, 'hm_tz_set_method', true);
 	$hm_tz_set_method_array = array(
-		'geoip' 	 => 'Geo IP',
-		'foursquare' => 'Foursquare',
-		'manual'	 => 'Manual'
+		'manual' => 'Manual'
 	);
 
-	$hm_tz_set_method = '';
-	foreach($hm_tz_set_method_array as $sm_value => $sm_label){
+	apply_filters( 'hm_tz_set_method_array', $hm_tz_set_method_array );
 
-		if(empty($hm_tz_set_method_value)){
-			//TODO: turn into a GUI option
-			$hm_tz_set_method_value = 'geoip';     // set the default value
+	// only need to display set method if there is more than one option
+	if(1 < count($hm_tz_set_method_array)){
+		$hm_tz_set_method_input = '<p><label><input type="radio" name="%1$s" value="%2$s" %3$s/> %4$s</label></p>';
+		$hm_tz_set_method_value = get_user_meta($user_id, 'hm_tz_set_method', true);
+		$hm_tz_set_method = '';
+
+		foreach ( $hm_tz_set_method_array as $sm_value => $sm_label ) {
+
+			if( empty( $hm_tz_set_method_value ) ){
+				$hm_tz_set_method_value = 'manual';
+				$options = get_option('hm_tz_options');
+
+				if(!empty($options['default_set_method'])){
+					$hm_tz_set_method_value = $options['default_set_method'];     // set the default value
+				}
+			}
+
+			$sm_saved = ( $hm_tz_set_method_value === $sm_value ? 'checked=checked' : '');
+
+			$hm_tz_set_method .= sprintf($hm_tz_set_method_input, 'hm_tz_set_method', $sm_value , $sm_saved , $sm_label);
 		}
 
-		$sm_saved = ( $hm_tz_set_method_value === $sm_value ? 'checked=checked' : '');
-
-		$hm_tz_set_method .= sprintf($hm_tz_set_method_input, 'hm_tz_set_method', $sm_value , $sm_saved , $sm_label);
+		printf($table_row, 'hm_tz_set_method', __('Set method'), $hm_tz_set_method , __('Please select how you want your timezone to be updated'));
+	} else {
+		update_user_meta( $user_id, 'hm_tz_set_method', 'manual');
 	}
 
-	printf($table_row, 'hm_tz_set_method', __('Timezone - Set method'), $hm_tz_set_method , __('Please select how you want your timezone to be updated'));
-
-	// Set Foursquare username input
-	$hm_tz_foursquare_value = get_user_meta($user_id, 'hm_tz_foursquare_id', true);
-	$hm_tz_foursquare = sprintf($input_text, 'hm_tz_foursquare_id', $hm_tz_foursquare_value);
-	printf($table_row, 'hm_tz_foursquare_id', __('Foursquare Account'), $hm_tz_foursquare, __('Please enter your foursquare username'));
+	do_action( 'hm_tz_add_options', $user_id );
 
 	// Set timezone manually
 	$hm_tz_manual_value = get_user_meta($user_id, 'hm_tz_timezone', true);
@@ -62,7 +69,6 @@ function hm_time_user_profile_fields(){
 		if(is_array($lvalue)){
 			foreach($lvalue as $value => $label){
 				$selected = ($hm_tz_manual_value == $value ? 'selected="selected"' : '');
-
 				$hm_tz_manual_inputs .= '<option value="'.$value.'" '.$selected.'>'.$label.'</option>';
 			}
 		}
@@ -71,7 +77,6 @@ function hm_time_user_profile_fields(){
 
 	$hm_tz_manual = '<select name="hm_tz_timezone">'.$hm_tz_manual_inputs.'</select>';
 	printf($table_row, 'hm_tz_timezone', __('Manual Selection'), $hm_tz_manual, __('Please select your timezone'));
-
 
 	echo '</table>';
 }
@@ -116,33 +121,3 @@ function tz_locations(){
 	return $locations;
 }
 
-function tz_ip_lookup($hostname = null){
-
-	if(empty($hostname)){
-		if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
-			$hostname = $_SERVER['HTTP_CLIENT_IP'];
-		} elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) { //to check ip is pass from proxy
-			$hostname = $_SERVER['HTTP_X_FORWARDED_FOR'];
-		} else {
-			$hostname = $_SERVER['REMOTE_ADDR'];
-		}
-	}
-
-	if(function_exisit('geoip_country_code_by_name')){
-	//	$country_code = geoip_country_code_by_name($hostname);
-	//	$region_code = geoip_region_by_name($hostname);
-	//
-	//	$timezone = geoip_time_zone_by_country_and_region($country_code, $region_code);
-	} else {
-		$url = 'https://freegeoip.net/json/'.$hostname;
-		$data = json_decode(file_get_contents($url));
-		echo '<pre>';
-		var_dump($data);
-		echo '</pre>';
-
-		// need  geoip installing on the server.  gotta be a better way.
-	}
-
-
-	return $hostname;
-}

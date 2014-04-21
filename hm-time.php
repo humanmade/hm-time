@@ -32,7 +32,11 @@ register_activation_hook(__FILE__, 'hm_time_install');
 register_deactivation_hook(__FILE__, 'hm_time_uninstall');
 
 function hm_time_install(){
+	$hm_tz_options = array(
+		'default_set_method' => 'manual';
+	);
 
+	update_option('hm_tz_options', $hm_tz_options);
 }
 
 function hm_time_uninstall(){
