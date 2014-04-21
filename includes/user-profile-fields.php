@@ -1,14 +1,11 @@
 <?php
 
-add_action( 'show_user_profile', 'hm_time_user_profile_fields' );
-add_action( 'edit_user_profile', 'hm_time_user_profile_fields' );
+add_action( 'show_user_profile', 'hm_tz_user_profile_fields' );
+add_action( 'edit_user_profile', 'hm_tz_user_profile_fields' );
 
-function hm_time_user_profile_fields(){
+function hm_tz_user_profile_fields(){
 	global $user_id;
 	$user_id = (int) $user_id;
-
-	echo '<h3>'.__('Time Zone') .'</h3>
-		  <table class="form-table">';
 
 	/**
 	 * %1$s - field id/name
@@ -24,7 +21,15 @@ function hm_time_user_profile_fields(){
 					</tr>';
 	$input_text = '<input type="text" name="%1$s" id="%1$s" value="%2$s"/>';
 
-	// Set Timezone Entry Method Fields
+
+	hm_tz_timezone_settings($user_id, $table_row, $input_text);
+	hm_tz_workhours_settings($user_id, $table_row, $input_text);
+}
+
+function hm_tz_timezone_settings($user_id, $table_row, $input_text){
+	echo '<h3>'.__('Time Zone') .'</h3>
+		  <table class="form-table">';
+
 	$hm_tz_set_method_array = array(
 		'manual' => 'Manual'
 	);
@@ -82,6 +87,32 @@ function hm_time_user_profile_fields(){
 
 }
 
+function hm_tz_workhours_settings($user_id, $table_row, $input_text){
+	echo '<h3>'.__('Work Hours') .'</h3>
+		  <table class="form-table">
+			<tr><th>Start</th><th>End</th></tr>
+		  ';
+
+
+	$hm_wh_values = get_user_meta($user_id, 'hm_tz_workhours', true);
+
+	$wh_row = '<tr>
+				<td><input type="text" value="%2$s" name="hm_tz_workhours[%1$s][start]"></td>
+				<td><input type="text" value="%3$s" name="hm_tz_workhours[%1$s][end]"></td>
+			   </tr>';
+	$wh_count = 0;
+	foreach($hm_wh_values as $row => $wh_times){
+		if(empty($wh_times['start'])){
+			continue;
+		}
+		 printf($wh_row, $wh_count, $wh_times['start'], $wh_times['end']);
+		$wh_count++;
+	}
+	printf($wh_row, $wh_count, '', '');
+	echo '</table>';
+}
+
+
 add_action( 'personal_options_update', 'hm_time_save_profile_fields' );
 add_action( 'edit_user_profile_update', 'hm_time_save_profile_fields' );
 
@@ -93,11 +124,13 @@ function hm_time_save_profile_fields( $user_id ) {
 		update_user_meta( $user_id, 'hm_tz_set_method', $_POST['hm_tz_set_method'] );
 	}
 
-	$hm_tz_new_timezone = $_POST['hm_tz_timezone'];
+	$hm_tz_new_timezone  = $_POST['hm_tz_timezone'];
+	$hm_tz_new_workhours = 	$_POST[hm_tz_workhours];
 
 	apply_filters( 'hm_tz_save_options', $user_id, $_POST );
 
 	update_user_meta( $user_id, 'hm_tz_timezone', $hm_tz_new_timezone );
+	update_user_meta( $user_id, 'hm_tz_workhours', $hm_tz_new_workhours );
 }
 
 
