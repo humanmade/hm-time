@@ -21,23 +21,33 @@ function hm_tz_user_profile_fields(){
 					</tr>';
 	$input_text = '<input type="text" name="%1$s" id="%1$s" value="%2$s"/>';
 
-//	var_dump(hm_tz_geoip_lookup('87.81.222.178'));
-//	var_dump(hm_tz_geoip_lookup('213.46.29.101'));       //nl
-//	var_dump(hm_tz_geoip_lookup('206.205.89.138'));       //   us
-	var_dump(hm_tz_geoip_lookup('27.122.12.78'));       //   noel
+	if(function_exists('hm_tz_geoip_lookup')){
+		$ip = '84.92.84.163';
+		echo('<pre>');
+		echo '<h3>'.$ip.'</h3>';
+			var_dump(hm_tz_geoip_lookup($ip));
+		echo('</pre>');
+	}
+
 	hm_tz_timezone_settings($user_id, $table_row, $input_text);
 	hm_tz_workhours_settings($user_id, $table_row, $input_text);
+}
+
+function hm_tz_timezone_options(){
+	$hm_tz_set_method_array = array(
+		'manual' => 'Manual'
+	);
+
+	$hm_tz_set_method_array = apply_filters( 'hm_tz_set_method_array', $hm_tz_set_method_array );
+
+	return $hm_tz_set_method_array;
 }
 
 function hm_tz_timezone_settings($user_id, $table_row, $input_text){
 	echo '<h3>'.__('Time Zone') .'</h3>
 		  <table class="form-table">';
 
-	$hm_tz_set_method_array = array(
-		'manual' => 'Manual'
-	);
-
-	$hm_tz_set_method_array = apply_filters( 'hm_tz_set_method_array', $hm_tz_set_method_array );
+	$hm_tz_set_method_array = hm_tz_timezone_options();
 
 	// only need to display set method if there is more than one option
 	if(1 < count($hm_tz_set_method_array)){
@@ -96,21 +106,24 @@ function hm_tz_workhours_settings($user_id, $table_row, $input_text){
 			<tr><th>Start</th><th>End</th></tr>
 		  ';
 
-
+//	delete_user_meta($user_id, 'hm_tz_workhours');
 	$hm_wh_values = get_user_meta($user_id, 'hm_tz_workhours', true);
 
 	$wh_row = '<tr>
-				<td><input type="text" value="%2$s" name="hm_tz_workhours[%1$s][start]"></td>
-				<td><input type="text" value="%3$s" name="hm_tz_workhours[%1$s][end]"></td>
+				<td><input type="time" value="%2$s" name="hm_tz_workhours[%1$s][start]"></td>
+				<td><input type="time" value="%3$s" name="hm_tz_workhours[%1$s][end]"></td>
 			   </tr>';
 	$wh_count = 0;
-	foreach($hm_wh_values as $row => $wh_times){
-		if(empty($wh_times['start'])){
-			continue;
+	if(is_array($hm_wh_values)){
+		foreach($hm_wh_values as $row => $wh_times){
+			if(empty($wh_times['start'])){
+				continue;
+			}
+			printf($wh_row, $wh_count, $wh_times['start'], $wh_times['end']);
+			$wh_count++;
 		}
-		 printf($wh_row, $wh_count, $wh_times['start'], $wh_times['end']);
-		$wh_count++;
 	}
+
 	printf($wh_row, $wh_count, '', '');
 	echo '</table>';
 }
@@ -123,12 +136,13 @@ function hm_time_save_profile_fields( $user_id ) {
 
 	if ( !current_user_can( 'edit_user', $user_id ) ) { return false; }
 
-	if(isset($_POST['hm_tz_set_method']) && !empty($_POST['hm_tz_set_method'])){
+	$hm_tz_set_method_array = hm_tz_timezone_options();
+	if(isset($_POST['hm_tz_set_method']) && array_key_exists($_POST['hm_tz_set_method'], $hm_tz_set_method_array)){
 		update_user_meta( $user_id, 'hm_tz_set_method', $_POST['hm_tz_set_method'] );
 	}
 
 	$hm_tz_new_timezone  = $_POST['hm_tz_timezone'];
-	$hm_tz_new_workhours = 	$_POST[hm_tz_workhours];
+	$hm_tz_new_workhours =  $_POST['hm_tz_workhours'];
 
 	apply_filters( 'hm_tz_save_options', $user_id, $_POST );
 

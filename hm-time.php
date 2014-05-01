@@ -28,6 +28,7 @@
 if ( ! defined( 'ABSPATH' ) ){
 	exit;
 }
+
 register_activation_hook(__FILE__, 'hm_time_install');
 register_deactivation_hook(__FILE__, 'hm_time_uninstall');
 
@@ -42,9 +43,10 @@ function hm_time_install(){
 function hm_time_uninstall(){
 
 }
+
 require_once('includes/user-profile-fields.php');
 
-if(extension_loaded('geoip')){
-
-	require_once('includes/geoip.php');
-}
+//if(extension_loaded('geoip')){
+	require_once ('vendor/autoload.php');
+	require_once ('includes/geoip.php');
+//}
