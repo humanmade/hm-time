@@ -8,14 +8,27 @@ function hm_tz_geoip_options($hm_tz_set_method_array){
 	return $hm_tz_set_method_array;
 }
 
-add_filter( 'hm_tz_save_options', 'hm_tz_geoip_save', 10, 1 );
+add_filter( 'hm_tz_timezone_filter', 'hm_tz_geoip_set_timezone', 10, 2 );
 
-function hm_tz_geoip_save($user_id){
-	if ( 'geoip' == $POST['hm_tz_set_method'] ) {
-		$hm_tz_new_timezone = hm_tz_geoip_lookup('87.81.222.178'); // Test IP address
+function hm_tz_geoip_set_timezone($user_id, $posted_data){
+	var_dump($posted_data)         ;
+	if ( 'geoip' == $posted_data['hm_tz_set_method'] ) {
+		$data = hm_tz_geoip_lookup('2.101.84.98');
+		$hm_tz_new_timezone = $data->location->timeZone   ;
 	}
 
+	var_dump($hm_tz_new_timezone)        ;
 	return $hm_tz_new_timezone;
+}
+
+add_filter( 'hm_tz_pre_save_options', 'hm_tz_geoip_set_location', 10, 1 );
+
+function hm_tz_geoip_set_location($user_id){
+	if ( 'geoip' == $POST['hm_tz_set_method'] ) {
+		$data = hm_tz_geoip_lookup();
+		$hm_tz_new_location = $data->city->names['en']   ;
+	}
+	return $hm_tz_new_location;
 }
 
 function hm_tz_geoip_lookup($hostname = null){

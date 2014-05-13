@@ -22,11 +22,18 @@ function hm_tz_user_profile_fields(){
 	$input_text = '<input type="text" name="%1$s" id="%1$s" value="%2$s"/>';
 
 	if(function_exists('hm_tz_geoip_lookup')){
-		$ip = '84.92.84.163';
-		echo('<pre>');
-		echo '<h3>'.$ip.'</h3>';
-			var_dump(hm_tz_geoip_lookup($ip));
-		echo('</pre>');
+//		$ip = '84.92.84.163';      //
+//		$ip = '58.96.33.217';      // ryan
+//		$ip = '54.252.87.81';      // theo
+//		$ip = '54.229.166.87';      // mgdm
+//		$ip = '2.101.84.98';      // matt
+//		echo('<pre>');
+//		echo '<h3>'.$ip.'</h3>';
+//		    $d = hm_tz_geoip_lookup($ip);
+//		    $t = $d->location->timeZone   ;
+//		    $l = $d;
+//			var_dump($l->city->names['en']);
+//		echo('</pre>');
 	}
 
 	hm_tz_timezone_settings($user_id, $table_row, $input_text);
@@ -134,17 +141,18 @@ add_action( 'edit_user_profile_update', 'hm_time_save_profile_fields' );
 
 function hm_time_save_profile_fields( $user_id ) {
 
-	if ( !current_user_can( 'edit_user', $user_id ) ) { return false; }
-
 	$hm_tz_set_method_array = hm_tz_timezone_options();
 	if(isset($_POST['hm_tz_set_method']) && array_key_exists($_POST['hm_tz_set_method'], $hm_tz_set_method_array)){
 		update_user_meta( $user_id, 'hm_tz_set_method', $_POST['hm_tz_set_method'] );
 	}
 
 	$hm_tz_new_timezone  = $_POST['hm_tz_timezone'];
+	$hm_tz_new_location  = '';
 	$hm_tz_new_workhours =  $_POST['hm_tz_workhours'];
 
-	apply_filters( 'hm_tz_save_options', $user_id, $_POST );
+	$hm_tz_new_timezone = apply_filters( 'hm_tz_timezone_filter', $user_id, $_POST );
+	$hm_tz_new_location = apply_filters( 'hm_tz_locationb_filter', $user_id, $_POST );
+
 
 	update_user_meta( $user_id, 'hm_tz_timezone', $hm_tz_new_timezone );
 	update_user_meta( $user_id, 'hm_tz_workhours', $hm_tz_new_workhours );
