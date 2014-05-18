@@ -45,6 +45,7 @@ function hm_time_uninstall(){
 }
 
 require_once('includes/user-profile-fields.php');
+require_once('settings.php');
 
 //if(extension_loaded('geoip')){
 	require_once ('vendor/autoload.php');
