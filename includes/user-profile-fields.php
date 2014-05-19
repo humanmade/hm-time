@@ -2,6 +2,16 @@
 
 add_action( 'show_user_profile', 'hm_tz_user_profile_fields' );
 add_action( 'edit_user_profile', 'hm_tz_user_profile_fields' );
+add_action('admin_enqueue_scripts', 'hm_time_admin_js');
+
+function hm_time_admin_js($hook){
+	if( 'profile.php' != $hook ){
+		return;
+	}
+
+	wp_enqueue_script( 'hm_time_script', PLUGIN_URL . 'js/hm_time.js', 'jquery', false, true );
+}
+
 
 function hm_tz_user_profile_fields(){
 	global $user_id;
@@ -37,6 +47,7 @@ function hm_tz_user_profile_fields(){
 	}
 
 	hm_tz_timezone_settings($user_id, $table_row, $input_text);
+	hm_tz_location_settings($user_id, $table_row, $input_text);
 	hm_tz_workhours_settings($user_id, $table_row, $input_text);
 }
 
@@ -66,10 +77,10 @@ function hm_tz_timezone_settings($user_id, $table_row, $input_text){
 
 			if( empty( $hm_tz_set_method_value ) ){
 				$hm_tz_set_method_value = 'manual';
-				$options = get_option('hm_time_options');
+				$default_set_method = hm_time_options('default_set_method');
 
-				if(!empty($options['default_set_method'])){
-					$hm_tz_set_method_value = $options['default_set_method'];     // set the default value
+				if(!empty($default_set_method)){
+					$hm_tz_set_method_value = $default_set_method;     // set the default value
 				}
 			}
 
@@ -107,18 +118,29 @@ function hm_tz_timezone_settings($user_id, $table_row, $input_text){
 
 }
 
+function hm_tz_location_settings($user_id, $table_row, $input_text){
+	echo '<h3>'.__('Location') .'</h3>
+		  <table class="form-table">';
+	$hm_tz_location_value = get_user_meta($user_id, 'hm_tz_location', true);
+	$hm_tz_location_input = '<input type="text" name="hm_tz_location" value="'.$hm_tz_location_value.'"/>';
+
+	printf($table_row, 'hm_tz_location', __('City/ Country'), $hm_tz_location_input , '');
+	echo '</table>';
+}
+
 function hm_tz_workhours_settings($user_id, $table_row, $input_text){
 	echo '<h3>'.__('Work Hours') .'</h3>
-		  <table class="form-table">
+		  <p>Shown in 24 hour clock</p>
+		  <table id="work_hours" class="form-table">
 			<tr><th>Start</th><th>End</th></tr>
 		  ';
 
 //	delete_user_meta($user_id, 'hm_tz_workhours');
 	$hm_wh_values = get_user_meta($user_id, 'hm_tz_workhours', true);
 
-	$wh_row = '<tr>
-				<td><input type="time" value="%2$s" name="hm_tz_workhours[%1$s][start]"></td>
-				<td><input type="time" value="%3$s" name="hm_tz_workhours[%1$s][end]"></td>
+	$wh_row = '<tr class="tr_clone">
+				<td><input type="time" value="%2$s" name="hm_tz_workhours[%1$s][start]" data-rownum="%1$s" class="start"></td>
+				<td><input type="time" value="%3$s" name="hm_tz_workhours[%1$s][end]" data-rownum="%1$s" class="end"></td>
 			   </tr>';
 	$wh_count = 0;
 	if(is_array($hm_wh_values)){
@@ -132,7 +154,7 @@ function hm_tz_workhours_settings($user_id, $table_row, $input_text){
 	}
 
 	printf($wh_row, $wh_count, '', '');
-	echo '</table>';
+	echo '</table><input type="button" name="add" value="Add New Row" class="tr_clone_add">';
 }
 
 
@@ -141,21 +163,41 @@ add_action( 'edit_user_profile_update', 'hm_time_save_profile_fields' );
 
 function hm_time_save_profile_fields( $user_id ) {
 
-	$hm_tz_set_method_array = hm_tz_timezone_options();
-	if(isset($_POST['hm_tz_set_method']) && array_key_exists($_POST['hm_tz_set_method'], $hm_tz_set_method_array)){
-		update_user_meta( $user_id, 'hm_tz_set_method', $_POST['hm_tz_set_method'] );
+	$hm_tz_new_set_method = $_POST['hm_tz_set_method'];
+	$hm_tz_new_timezone  = $_POST['hm_tz_timezone'];
+	$hm_tz_new_location  = $_POST['hm_tz_location'];
+	$hm_tz_new_workhours =  $_POST['hm_tz_workhours'];
+	// Validate and Sanitize
+
+	//Set method validation
+	$valid_set_methods = hm_tz_timezone_options();
+	if(!empty($hm_tz_new_set_method) && in_array($hm_tz_new_set_method, $valid_set_methods)){
+		update_user_meta( $user_id, 'hm_tz_set_method', $hm_tz_new_set_method );
 	}
 
-	$hm_tz_new_timezone  = $_POST['hm_tz_timezone'];
-	$hm_tz_new_location  = '';
-	$hm_tz_new_workhours =  $_POST['hm_tz_workhours'];
+	// Timezone validation
+	$valid_timezones = timezone_identifiers_list();
 
-	$hm_tz_new_timezone = apply_filters( 'hm_tz_timezone_filter', $user_id, $hm_tz_new_timezone, $_POST );
-	$hm_tz_new_location = apply_filters( 'hm_tz_location_filter', $user_id, $hm_tz_new_location,  $_POST );
-	$hm_tz_new_workhours = apply_filters( 'hm_tz_workhours_filter', $user_id, $hm_tz_new_workhours,  $_POST );
+	if(!empty($hm_tz_new_timezone) && in_array($hm_tz_new_timezone, $valid_timezones)){
+		$hm_tz_new_timezone = apply_filters( 'hm_tz_timezone_filter', $hm_tz_new_timezone, $_POST );
+		update_user_meta( $user_id, 'hm_tz_timezone', $hm_tz_new_timezone );
+	};
 
-	update_user_meta( $user_id, 'hm_tz_timezone', $hm_tz_new_timezone );
-	update_user_meta( $user_id, 'hm_tz_workhours', $hm_tz_new_workhours );
+	// Location validation
+	$hm_tz_new_location = sanitize_text_field($hm_tz_new_location);
+
+	$hm_tz_new_location = apply_filters( 'hm_tz_location_filter', $hm_tz_new_location, $_POST );
+	update_user_meta( $user_id, 'hm_tz_location', $hm_tz_new_location );
+
+
+	// Work hours validation
+	$valid_workhours =  array_walk_recursive($hm_tz_new_workhours, 'validate_workhours');
+	if($valid_workhours){
+		$hm_tz_new_workhours = apply_filters( 'hm_tz_workhours_filter', $hm_tz_new_workhours, $_POST );
+
+		update_user_meta( $user_id, 'hm_tz_workhours', $hm_tz_new_workhours );
+	}
+
 }
 
 
@@ -178,3 +220,13 @@ function hm_tz_locations(){
 	return $locations;
 }
 
+function validate_workhours(&$item, $key){
+	$checked_item = preg_match('/^[0-2][0-9]:[0-5][0-9]$/', $item);
+
+	if(!$checked_item){
+		$item = '';
+	}
+
+	return $item;
+
+}

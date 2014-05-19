@@ -36,7 +36,7 @@ function hm_time_admin_init(){
 
 	// Default Definitions
 	add_settings_section('hm_time_defaults', 'Defaults','hm_time_defaults_section_text', 'hm_time');
-	add_settings_field('hm_time_default_method', 'Set Method','hm_time_default_method_input', 'hm_time', 'hm_time_defaults');
+	add_settings_field('hm_time_default_set_method', 'Set Method','hm_time_default_set_method_input', 'hm_time', 'hm_time_defaults');
 
 }
 
@@ -46,11 +46,8 @@ function hm_time_geoip_section_text(){
 }
 
 function hm_time_geoip_user_id_input(){
-    $options = get_option('hm_time_options');
-	$geoip_user_id = '';
-	if(isset($options['geoip_user_id'])){
-		$geoip_user_id = $options['geoip_user_id'];
-	}
+
+	$geoip_user_id = hm_time_options('geoip_user_id', 'string');
 
 	echo '<input id="geoip_user_id" name="hm_time_options[geoip_user_id]" type="text" value="'.$geoip_user_id.'" />';
 }
@@ -106,7 +103,7 @@ function hm_time_defaults_section_text(){
 	return;
 }
 
-function hm_time_default_method_input(){
+function hm_time_default_set_method_input(){
 //	echo '<input id="default_method" name="hm_time_options[default_method]" type="radio" value="Geio" />';
 
 	$hm_tz_set_method_array = hm_tz_timezone_options();
@@ -131,6 +128,8 @@ function hm_time_default_method_input(){
 		}
 		$hm_tz_set_method .= '<span class="description">Please select how you want your timezone to be updated</span>';
 		echo  $hm_tz_set_method;
+	} else {
+		echo '<p>Only method currently is <strong>Manual</strong>. Please insert Foursqaure client ID or GeoIP user ID to have more options.</p>';
 	}
 }
 

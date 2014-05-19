@@ -29,15 +29,23 @@ if ( ! defined( 'ABSPATH' ) ){
 	exit;
 }
 
+define('PLUGIN_URL', plugin_dir_url(__FILE__));
+
+
 register_activation_hook(__FILE__, 'hm_time_install');
 register_deactivation_hook(__FILE__, 'hm_time_uninstall');
 
 function hm_time_install(){
 	$hm_tz_options = array(
-		'default_set_method' => 'manual'
+		'default_set_method' => 'manual',
+		'geoip_user_id' 	 => '',
+		'geoip_license_key'	=> '',
+		'foursquare_client_id'	=> '',
+		'foursquare_client_secret' => '',
+		'google_timezone_api_key' => ''
 	);
-
-	update_option('hm_tz_options', $hm_tz_options);
+	// future > add in filter hook here to be able to extend
+	update_option('hm_time_options', $hm_tz_options);
 }
 
 function hm_time_uninstall(){
@@ -47,7 +55,28 @@ function hm_time_uninstall(){
 require_once('includes/user-profile-fields.php');
 require_once('settings.php');
 
-//if(extension_loaded('geoip')){
+$geoip_user_id = hm_time_options('geoip_user_id');
+if(!empty($geoip_user_id)){
 	require_once ('vendor/autoload.php');
 	require_once ('includes/geoip.php');
-//}
+}
+
+function hm_time_options($key = null, $format = null){
+	$options = get_option('hm_time_options');
+
+	if(!empty($key) && array_key_exists($key, $options)){
+		return $options[$key];
+	} else {
+		switch($format){
+			case 'string':
+				return '';
+			case 'boolean':
+				return false;
+			default:
+				return null;
+		}
+	}
+
+	return $options;
+
+}
