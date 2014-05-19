@@ -27,12 +27,14 @@ GET /hm-time/timezone/ returns a list of timezones with users in them , with the
 GET /hm-time/timezone/europe/london/ returns a list of users in that particular timezone as well as the current time and offset.
 
 
-From Joe:
----------
-GET /api/time/now
+Future extension
+----------------
+GET /hm-time/users?filter=now
 
 **Returns a list of users with their timezones and working hours**
 
 The reason I put "now" is if in the future we were to integrate vacatios etc, this endpoint would just reflect the people who are curently working, where as `/api/time` may return all the users and data with working schedules etc.
+
+GET /hm-time/users?filter=vactions returns a list of users with their upcoming vacation set.
 
 
