@@ -33,8 +33,8 @@ GET /hm-time/users?filter=now
 
 **Returns a list of users with their timezones and working hours**
 
-The reason I put "now" is if in the future we were to integrate vacatios etc, this endpoint would just reflect the people who are curently working, where as `/api/time` may return all the users and data with working schedules etc.
+The reason I put "now" is if in the future we were to integrate vacations etc, this endpoint would just reflect the people who are curently working, where as `/api/time` may return all the users and data with working schedules etc.
 
-GET /hm-time/users?filter=vactions returns a list of users with their upcoming vacation set.
+GET /hm-time/users?filter=vacations returns a list of users with their upcoming vacation set.
 
 
