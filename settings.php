@@ -32,6 +32,7 @@ function hm_time_admin_init(){
 	add_settings_section('hm_time_foursquare', 'Foursqaure','hm_time_foursquare_section_text', 'hm_time');
 	add_settings_field('hm_time_foursquare_client_id', 'Client ID','hm_time_foursquare_client_id_input', 'hm_time', 'hm_time_foursquare');
 	add_settings_field('hm_time_foursquare_client_secret', 'Client Secret','hm_time_foursquare_client_secret_input', 'hm_time', 'hm_time_foursquare');
+	add_settings_field('hm_time_foursquare_push_secret', 'Push Secret','hm_time_foursquare_push_secret_input', 'hm_time', 'hm_time_foursquare');
 	add_settings_field('hm_time_google_timezone_api_key', 'Google Timezone API Key','hm_time_google_timezone_api_key_input', 'hm_time', 'hm_time_foursquare');
 
 	// Default Definitions
@@ -85,6 +86,16 @@ function hm_time_foursquare_client_secret_input(){
 	}
 
 	echo '<input id="foursquare_client_secret" name="hm_time_options[foursquare_client_secret]" type="text" value="'.$foursquare_client_secret.'" />';
+}
+
+function hm_time_foursquare_push_secret_input(){
+	$options = get_option('hm_time_options');
+	$foursquare_push_secret = '';
+	if(isset($options['foursquare_push_secret'])){
+		$foursquare_push_secret = $options['foursquare_push_secret'];
+	}
+
+	echo '<input id="foursquare_push_secret" name="hm_time_options[foursquare_push_secret]" type="text" value="'.$foursquare_push_secret.'" />';
 }
 
 function hm_time_google_timezone_api_key_input(){

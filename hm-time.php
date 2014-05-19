@@ -61,6 +61,11 @@ if(!empty($geoip_user_id)){
 	require_once ('includes/geoip.php');
 }
 
+$foursquare_client_id = hm_time_options('foursquare_client_id');
+if(!empty($foursquare_client_id)){
+	require_once ('includes/foursquare.php');
+}
+
 function hm_time_options($key = null, $format = null){
 	$options = get_option('hm_time_options');
 

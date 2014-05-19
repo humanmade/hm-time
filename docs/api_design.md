@@ -26,6 +26,8 @@ GET /hm-time/timezone/ returns a list of timezones with users in them , with the
 
 GET /hm-time/timezone/europe/london/ returns a list of users in that particular timezone as well as the current time and offset.
 
+POST /hm-time/foursquare using Foursqaure User Push API, it will post to  particular API and send  data back  to be stored. Techincally not creating but updating but Foursquare do not have a PUT option.
+
 
 Future extension
 ----------------

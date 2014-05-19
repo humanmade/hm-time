@@ -94,7 +94,7 @@ function hm_tz_timezone_settings($user_id, $table_row, $input_text){
 		update_user_meta( $user_id, 'hm_tz_set_method', 'manual');
 	}
 
-	do_action( 'hm_tz_add_options', $user_id );
+	do_action( 'hm_tz_add_options', $user_id, $table_row, $input_text );
 
 	// Set timezone manually
 	$hm_tz_manual_value = get_user_meta($user_id, 'hm_tz_timezone', true);
@@ -161,17 +161,39 @@ function hm_tz_workhours_settings($user_id, $table_row, $input_text){
 add_action( 'personal_options_update', 'hm_time_save_profile_fields' );
 add_action( 'edit_user_profile_update', 'hm_time_save_profile_fields' );
 
-function hm_time_save_profile_fields( $user_id ) {
+function hm_time_save_profile_fields( $user_id, $timezone = null, $location = null, $workhours = null ) {
 
-	$hm_tz_new_set_method = $_POST['hm_tz_set_method'];
-	$hm_tz_new_timezone  = $_POST['hm_tz_timezone'];
-	$hm_tz_new_location  = $_POST['hm_tz_location'];
-	$hm_tz_new_workhours =  $_POST['hm_tz_workhours'];
+	$hm_tz_new_set_method = '';
+	$hm_tz_new_timezone  = '';
+	$hm_tz_new_location  = '';
+	$hm_tz_new_workhours =  array();
+
+
+	// data coming from foursqaure push api
+	$set_method = get_user_meta( 1, 'hm_tz_set_method', true);
+	if('foursquare' == $set_method){
+
+		if(!empty($timezone)){
+			$hm_tz_new_timezone = $timezone;
+		}
+		if(!empty($location)){
+			$hm_tz_new_location = $location;
+		}
+		if(!empty($workshours)){
+			$hm_tz_new_workhours = $workhours;
+		}
+	} else {
+		$hm_tz_new_set_method = $_POST['hm_tz_set_method'];
+		$hm_tz_new_timezone  = $_POST['hm_tz_timezone'];
+		$hm_tz_new_location  = $_POST['hm_tz_location'];
+		$hm_tz_new_workhours =  $_POST['hm_tz_workhours'];
+	}
 	// Validate and Sanitize
 
 	//Set method validation
 	$valid_set_methods = hm_tz_timezone_options();
-	if(!empty($hm_tz_new_set_method) && in_array($hm_tz_new_set_method, $valid_set_methods)){
+
+	if(!empty($hm_tz_new_set_method) && array_key_exists($hm_tz_new_set_method, $valid_set_methods)){
 		update_user_meta( $user_id, 'hm_tz_set_method', $hm_tz_new_set_method );
 	}
 
@@ -184,19 +206,22 @@ function hm_time_save_profile_fields( $user_id ) {
 	};
 
 	// Location validation
-	$hm_tz_new_location = sanitize_text_field($hm_tz_new_location);
+	if(!empty($hm_tz_new_location)){
+		$hm_tz_new_location = sanitize_text_field($hm_tz_new_location);
 
-	$hm_tz_new_location = apply_filters( 'hm_tz_location_filter', $hm_tz_new_location, $_POST );
-	update_user_meta( $user_id, 'hm_tz_location', $hm_tz_new_location );
-
+		$hm_tz_new_location = apply_filters( 'hm_tz_location_filter', $hm_tz_new_location, $_POST );
+		update_user_meta( $user_id, 'hm_tz_location', $hm_tz_new_location );
+	}
 
 	// Work hours validation
-	$valid_workhours =  array_walk_recursive($hm_tz_new_workhours, 'validate_workhours');
-	if($valid_workhours){
-		$hm_tz_new_workhours = apply_filters( 'hm_tz_workhours_filter', $hm_tz_new_workhours, $_POST );
-
-		update_user_meta( $user_id, 'hm_tz_workhours', $hm_tz_new_workhours );
+	if(!empty($hm_tz_new_workhours)){
+		$valid_workhours =  array_walk_recursive($hm_tz_new_workhours, 'validate_workhours');
+		if($valid_workhours){
+			$hm_tz_new_workhours = apply_filters( 'hm_tz_workhours_filter', $hm_tz_new_workhours, $_POST );
+			update_user_meta( $user_id, 'hm_tz_workhours', $hm_tz_new_workhours );
+		}
 	}
+
 
 }
 
