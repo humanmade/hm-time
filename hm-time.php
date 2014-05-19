@@ -85,3 +85,7 @@ function hm_time_options($key = null, $format = null){
 	return $options;
 
 }
+
+require_once ('includes/api-users.php');
+
+
