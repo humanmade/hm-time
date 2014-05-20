@@ -171,7 +171,7 @@ function hm_time_save_profile_fields( $user_id, $timezone = null, $location = nu
 
 	// data coming from foursqaure push api
 	$set_method = get_user_meta( 1, 'hm_tz_set_method', true);
-	if('foursquare' == $set_method){
+	if('foursquare' == $set_method && !isset($_POST['hm_tz_set_method'])){
 
 		if(!empty($timezone)){
 			$hm_tz_new_timezone = $timezone;

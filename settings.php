@@ -32,7 +32,10 @@ function hm_time_admin_init(){
 	add_settings_section('hm_time_foursquare', 'Foursqaure','hm_time_foursquare_section_text', 'hm_time');
 	add_settings_field('hm_time_foursquare_client_id', 'Client ID','hm_time_foursquare_client_id_input', 'hm_time', 'hm_time_foursquare');
 	add_settings_field('hm_time_foursquare_client_secret', 'Client Secret','hm_time_foursquare_client_secret_input', 'hm_time', 'hm_time_foursquare');
+	add_settings_field('hm_time_foursquare_redirect_uri', 'Redirect URI','hm_time_foursquare_redirect_uri_input', 'hm_time', 'hm_time_foursquare');
 	add_settings_field('hm_time_foursquare_push_secret', 'Push Secret','hm_time_foursquare_push_secret_input', 'hm_time', 'hm_time_foursquare');
+	add_settings_field('hm_time_foursquare_push_url', 'Push URL','hm_time_foursquare_push_url_input', 'hm_time', 'hm_time_foursquare');
+	add_settings_field('hm_time_foursquare_push_version', 'Push Version','hm_time_foursquare_push_version_input', 'hm_time', 'hm_time_foursquare');
 	add_settings_field('hm_time_google_timezone_api_key', 'Google Timezone API Key','hm_time_google_timezone_api_key_input', 'hm_time', 'hm_time_foursquare');
 
 	// Default Definitions
@@ -88,6 +91,16 @@ function hm_time_foursquare_client_secret_input(){
 	echo '<input id="foursquare_client_secret" name="hm_time_options[foursquare_client_secret]" type="text" value="'.$foursquare_client_secret.'" />';
 }
 
+function hm_time_foursquare_redirect_uri_input(){
+	$options = get_option('hm_time_options');
+	$foursquare_redirect_uri = '';
+	if(isset($options['foursquare_redirect_uri'])){
+		$foursquare_redirect_uri = $options['foursquare_redirect_uri'];
+	}
+
+	echo '<input id="foursquare_redirect_uri" name="hm_time_options[foursquare_redirect_uri]" type="text" value="'.$foursquare_redirect_uri.'" />';
+}
+
 function hm_time_foursquare_push_secret_input(){
 	$options = get_option('hm_time_options');
 	$foursquare_push_secret = '';
@@ -96,6 +109,27 @@ function hm_time_foursquare_push_secret_input(){
 	}
 
 	echo '<input id="foursquare_push_secret" name="hm_time_options[foursquare_push_secret]" type="text" value="'.$foursquare_push_secret.'" />';
+}
+
+
+function hm_time_foursquare_push_url_input(){
+	$options = get_option('hm_time_options');
+	$foursquare_push_url = '';
+	if(isset($options['foursquare_push_url'])){
+		$foursquare_push_url = $options['foursquare_push_url'];
+	}
+
+	echo '<input id="foursquare_push_url" name="hm_time_options[foursquare_push_url]" type="text" value="'.$foursquare_push_url.'" />';
+}
+
+function hm_time_foursquare_push_version_input(){
+	$options = get_option('hm_time_options');
+	$foursquare_push_version = '';
+	if(isset($options['foursquare_push_version'])){
+		$foursquare_push_version = $options['foursquare_push_version'];
+	}
+
+	echo '<input id="foursquare_push_secret" name="hm_time_options[foursquare_push_version]" type="text" value="'.$foursquare_push_version.'" />';
 }
 
 function hm_time_google_timezone_api_key_input(){
