@@ -1,19 +1,19 @@
 <?php
 use GeoIp2\WebService\Client;
 
-add_filter('hm_tz_set_method_array', 'hm_tz_geoip_options', 10, 1 );
-function hm_tz_geoip_options($hm_tz_set_method_array){
-	$hm_tz_set_method_array['geoip'] = 'Geo IP';
-	return $hm_tz_set_method_array;
+add_filter('hm_time_set_method_array', 'hm_time_geoip_options', 10, 1 );
+function hm_time_geoip_options($hm_time_set_method_array){
+	$hm_time_set_method_array['geoip'] = 'Geo IP';
+	return $hm_time_set_method_array;
 }
 
-add_filter( 'hm_tz_timezone_filter', 'hm_tz_geoip_set_timezone', 10, 2 );
-function hm_tz_geoip_set_timezone($data, $posted_data){
-	if ( 'geoip' != $posted_data['hm_tz_set_method'] ) {
+add_filter( 'hm_time_timezone_filter', 'hm_time_geoip_set_timezone', 10, 2 );
+function hm_time_geoip_set_timezone($data, $posted_data){
+	if ( 'geoip' != $posted_data['hm_time_set_method'] ) {
 		return $data;
 	}
 
-	$found_timezone = hm_tz_geoip_lookup_timezone('87.113.98.128');
+	$found_timezone = hm_time_geoip_lookup_timezone('87.113.98.128');
 
 	if(empty($found_timezone)){
 		// need to add in error saying that  geoip is not working because of exceptions. eg reserved IPs.
@@ -23,38 +23,38 @@ function hm_tz_geoip_set_timezone($data, $posted_data){
 	return $found_timezone;
 }
 
-add_filter( 'hm_tz_location_filter', 'hm_tz_geoip_set_location', 10, 2 );
-function hm_tz_geoip_set_location($data, $posted_data){
-	if ( 'geoip' != $posted_data['hm_tz_set_method'] ) {
+add_filter( 'hm_time_location_filter', 'hm_time_geoip_set_location', 10, 2 );
+function hm_time_geoip_set_location($data, $posted_data){
+	if ( 'geoip' != $posted_data['hm_time_set_method'] ) {
 		return $data;
 	}
 
-	$found_data = hm_tz_geoip_lookup('87.113.98.128');
+	$found_data = hm_time_geoip_lookup('87.113.98.128');
 
 	$city = $found_data->city->names['en'];
 	$country = $found_data->country->names['en'];
 
-	$hm_tz_new_location = '';
+	$hm_time_new_location = '';
 
 	if(!empty($city)){
-		$hm_tz_new_location .= $city;
+		$hm_time_new_location .= $city;
 	}
 
 	if(!empty($country)){
 		if(!empty($city)){
-			$hm_tz_new_location .= ', ';
+			$hm_time_new_location .= ', ';
 		}
-		$hm_tz_new_location .= $country;
+		$hm_time_new_location .= $country;
 	}
 
-	if(empty($hm_tz_new_location)){
-		$hm_tz_new_location = $data;
+	if(empty($hm_time_new_location)){
+		$hm_time_new_location = $data;
 	}
 
-	return $hm_tz_new_location;
+	return $hm_time_new_location;
 }
 
-function 	hm_tz_geoip_lookup($hostname = null){
+function 	hm_time_geoip_lookup($hostname = null){
 
 	if(empty($hostname)){
 		if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
@@ -82,9 +82,9 @@ function 	hm_tz_geoip_lookup($hostname = null){
 
 }
 
-function hm_tz_geoip_lookup_timezone($hostname = null){
+function hm_time_geoip_lookup_timezone($hostname = null){
 
-	$data = hm_tz_geoip_lookup($hostname);
+	$data = hm_time_geoip_lookup($hostname);
 
 	if(empty($data)){
 		return null;

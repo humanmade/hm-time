@@ -6,7 +6,7 @@ jQuery(document).ready(function($){
 					j	= i+ 1,
 					type = newrow.attr('class');
 				newrow.attr({
-					'name': 'hm_tz_workhours['+j+']['+ type +']',
+					'name': 'hm_time_workhours['+j+']['+ type +']',
 					'value': '',
 					'data-rownum': j
 				});
