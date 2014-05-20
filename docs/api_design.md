@@ -14,7 +14,7 @@ Data available
 
 API Design
 -------
-GET /hm-time/users/ gets all users with all possible data as a 4d array
+GET /hm-time/users/ gets all users with all possible data as a 3d array
 
 GET /hm-time/users/{id}/ gets details of particular user
 

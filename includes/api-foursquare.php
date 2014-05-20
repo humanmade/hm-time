@@ -1,10 +1,12 @@
 <?php
 
 function hm_time_api_foursquare_init() {
+
 	global $hm_time_api_foursquare;
 
 	$hm_time_api_foursquare = new HM_Time_API_Foursquare();
 	add_filter( 'json_endpoints', array( $hm_time_api_foursquare, 'register_routes' ) );
+
 }
 add_action( 'wp_json_server_before_serve', 'hm_time_api_foursquare_init' );
 

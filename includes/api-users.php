@@ -1,10 +1,12 @@
 <?php
 
 function hm_time_api_user_init() {
+
 	global $hm_time_api_users;
 
 	$hm_time_api_users = new HM_Time_API_Users();
 	add_filter( 'json_endpoints', array( $hm_time_api_users, 'register_routes' ) );
+
 }
 add_action( 'wp_json_server_before_serve', 'hm_time_api_user_init' );
 
