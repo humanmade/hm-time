@@ -59,6 +59,9 @@ class HM_Time_API_Users {
 		$response = array();
 
 		foreach($users as $user){
+
+			$data = array();
+			
 			$data['user_id']	= $user->id;
 			$data['name']    	= $user->display_name;
 			$data['email']		= $user->user_email;
