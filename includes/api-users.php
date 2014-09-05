@@ -64,7 +64,7 @@ class HM_Time_API_Users {
 			$data['email']		= $user->user_email;
 			$data['timezone'] 	= get_user_meta($user->id, 'hm_time_timezone', true) ? get_user_meta($user->id, 'hm_time_timezone', true) : 'UTC';
 			$data['location'] 	= get_user_meta($user->id, 'hm_time_location', true);
-			$data['workhours'] 	= get_user_meta($user->id, 'hm_time_workhours', true);
+			$data['workhours'] 	= get_user_meta($user->id, 'hm_time_workhours', true) ? get_user_meta($user->id, 'hm_time_workhours', true) : array();
 			$data['curr_time']	= '';
 			$data['curr_offset']	= '';
 
