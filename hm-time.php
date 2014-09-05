@@ -29,63 +29,99 @@ if ( ! defined( 'ABSPATH' ) ){
 	exit;
 }
 
-define('PLUGIN_URL', plugin_dir_url(__FILE__));
+define ( 'PLUGIN_URL', plugin_dir_url ( __FILE__ ) );
 
+register_activation_hook ( __FILE__, 'hm_time_install' );
+register_deactivation_hook ( __FILE__, 'hm_time_uninstall' );
 
-register_activation_hook(__FILE__, 'hm_time_install');
-register_deactivation_hook(__FILE__, 'hm_time_uninstall');
-
-function hm_time_install(){
-	$hm_tz_options = array(
-		'default_set_method' => 'manual',
-		'geoip_user_id' 	 => '',
-		'geoip_license_key'	=> '',
-		'foursquare_client_id'	=> '',
-		'foursquare_client_secret' => '',
-		'google_timezone_api_key' => ''
+function hm_time_install (){
+	$hm_time_options = array (
+		'default_set_method' 		=> 'manual',
+		'geoip_user_id' 			 => '',
+		'geoip_license_key'			=> '',
+		'foursquare_client_id'		=> '',
+		'foursquare_client_secret' 	=> '',
+		'foursquare_redirect_uri' 	=> '',
+		'foursquare_push_secret'	=> '',
+		'foursquare_push_url'		=> '',
+		'foursquare_push_version'	=> '',
+		'google_timezone_api_key' 	=> ''
 	);
-	// future > add in filter hook here to be able to extend
-	update_option('hm_time_options', $hm_tz_options);
+
+	$hm_time_options = apply_filters ( 'add_hm_time_options', $hm_time_options );
+
+	update_option ( 'hm_time_options', $hm_time_options );
 }
 
-function hm_time_uninstall(){
+function hm_time_uninstall (){
 
 }
 
-require_once('includes/user-profile-fields.php');
-require_once('settings.php');
+require_once ( 'includes/settings.php' );
+require_once ( 'includes/user-profile-fields.php' );
+require_once ( 'includes/api-users.php' );
 
-$geoip_user_id = hm_time_options('geoip_user_id');
-if(!empty($geoip_user_id)){
-	require_once ('vendor/autoload.php');
-	require_once ('includes/geoip.php');
+$options = hm_time_options();
+$geoip_user_id = $options['geoip_user_id'];
+$geoip_license_key = $options['geoip_license_key'];
+
+if ( ! empty ( $geoip_user_id ) && ! empty ( $geoip_license_key ) ){
+	require_once ( 'vendor/autoload.php' );
+	require_once ( 'includes/geoip.php' );
 }
 
-$foursquare_client_id = hm_time_options('foursquare_client_id');
-if(!empty($foursquare_client_id)){
+$foursquare = array ();
+$foursquare['foursquare_client_id'] 	= $options['foursquare_client_id'];
+$foursquare['foursquare_client_secret'] = $options['foursquare_client_secret'];
+$foursquare['foursquare_redirect_uri'] 	= $options['foursquare_redirect_uri'];
+$foursquare['foursquare_push_secret'] 	= $options['foursquare_push_secret'];
+$foursquare['foursquare_push_url'] 		= $options['foursquare_push_url'];
+$foursquare['foursquare_push_version'] 	= $options['foursquare_push_version'];
+$foursquare['google_timezone_api_key'] 	= $options['google_timezone_api_key'];
+
+foreach ( $foursquare as $key => $value ){
+	$foursquare[$key] = trim ( $value );
+}
+
+if( !in_array ( '', $foursquare ) ){
+
 	require_once ('includes/foursquare.php');
+	require_once ('includes/api-foursquare.php');
+
 }
 
-function hm_time_options($key = null, $format = null){
-	$options = get_option('hm_time_options');
+function hm_time_options ( $key = null, $format = null ){
 
-	if(!empty($key) && array_key_exists($key, $options)){
+	$options = get_option ( 'hm_time_options' );
+
+	if ( !empty ( $key ) && array_key_exists ( $key, $options ) ){
+
 		return $options[$key];
-	} else {
-		switch($format){
-			case 'string':
-				return '';
-			case 'boolean':
-				return false;
-			default:
-				return null;
-		}
+
 	}
 
-	return $options;
+	switch ( $format ){
+		case 'string':
+			return '';
+			break;
+		case 'boolean':
+			return false;
+			break;
+		default:
+			return $options;
+			break;
+	}
 
 }
 
-//require_once ('includes/api-users.php');
+function hm_time_timezone_options () {
 
+	$hm_time_set_method_array = array (
+		'manual' => 'Manual'
+	);
+
+	$hm_time_set_method_array = apply_filters( 'hm_time_set_method_array', $hm_time_set_method_array );
+
+	return $hm_time_set_method_array;
+}
 
