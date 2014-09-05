@@ -62,20 +62,32 @@ class HM_Time_API_Users {
 			$data['user_id']	= $user->id;
 			$data['name']    	= $user->display_name;
 			$data['email']		= $user->user_email;
-			$data['timezone'] 	= get_user_meta($user->id, 'hm_time_timezone', true);
+			$data['timezone'] 	= get_user_meta($user->id, 'hm_time_timezone', true) ? get_user_meta($user->id, 'hm_time_timezone', true) : 'UTC';
 			$data['location'] 	= get_user_meta($user->id, 'hm_time_location', true);
 			$data['workhours'] 	= get_user_meta($user->id, 'hm_time_workhours', true);
 			$data['curr_time']	= '';
 			$data['curr_offset']	= '';
+
 			$dateTimeObj = new DateTime('NOW');
-			if(!empty($data['timezone'])){
-				$dateTimeObj->setTimezone(new DateTimeZone($data['timezone']));
-				$data['curr_time'] = $dateTimeObj->format('Y-m-d H:i:s');
-				$offset_in_secs = $dateTimeObj->getOffset();
-				$offset_in_hours = $offset_in_secs / 60 / 60 ;
-				$data['curr_offset'] = $offset_in_hours;
+
+			$dateTimeObj->setTimezone(new DateTimeZone($data['timezone']));
+			$data['curr_time'] = $dateTimeObj->format('Y-m-d H:i:s');
+			$offset_in_secs = $dateTimeObj->getOffset();
+			$offset_in_hours = $offset_in_secs / 60 / 60 ;
+			$data['curr_offset'] = $offset_in_hours;
+
+			foreach ( $data['workhours'] as $num => $hours) {
+
+				$dateTimeObj = new DateTime( $hours['start'], new DateTimeZone( $data['timezone'] ) );
+				$dateTimeObj->setTimezone( new DateTimeZone( 'UTC' ) );
+				$data['workhours_utc'][$num]['start'] = $dateTimeObj->format('H:i');
+
+				$dateTimeObj = new DateTime( $hours['end'], new DateTimeZone( $data['timezone'] ) );
+				$dateTimeObj->setTimezone( new DateTimeZone( 'UTC' ) );
+				$data['workhours_utc'][$num]['end'] = $dateTimeObj->format('H:i');
 			}
-			$response[$user->id] = $data;
+
+			$response[] = $data;
 		}
 		return $response;
 	}
