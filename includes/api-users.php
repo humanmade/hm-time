@@ -5,7 +5,7 @@ function hm_time_api_user_init() {
 	global $hm_time_api_users;
 
 	$hm_time_api_users = new HM_Time_API_Users();
-	add_filter( 'json_endpoints', array( $hm_time_api_users, 'register_routes' ) );
+	add_filter( 'rest_api_init', array( $hm_time_api_users, 'register_routes' ) );
 
 }
 add_action( 'wp_json_server_before_serve', 'hm_time_api_user_init' );
@@ -19,14 +19,11 @@ class HM_Time_API_Users {
 	 * @return array Modified routes
 	 */
 	public function register_routes( $routes ) {
-		$user_routes = array(
-			// Users endpoints
-			'/hm-time/users'             => array(
-				array( array( $this, 'get_users' ), WP_JSON_Server::READABLE ),
-			),
 
-		);
-		return array_merge( $routes, $user_routes );
+		register_rest_route( 'hm-time/v1', '/users', array(
+			'callback' => array( $this, 'get_users' ),
+			'methods'  => WP_REST_Server::READABLE,
+		) );
 	}
 
 	/**
