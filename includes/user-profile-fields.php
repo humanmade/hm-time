@@ -158,7 +158,7 @@ function hm_time_save_profile_fields ( $user_id, $timezone = null, $location = n
 
 
 	// data coming from foursqaure push api
-	$set_method = get_user_meta ( 1, 'hm_time_set_method', true );
+	$set_method = get_user_meta( $user_id, 'hm_time_set_method', true );
 	if( 'foursquare' == $set_method && !isset( $_POST['hm_time_set_method'] ) ) {
 
 		if( !empty( $timezone ) ){

@@ -18,8 +18,12 @@ class HM_Time_API_Foursquare {
 		) );
 
 		register_rest_route( 'hm-time/v1', '/push', array(
-			'callback' => array( $this, 'new_push' ),
-			'methods'  => WP_REST_Server::CREATABLE,
+			'callback'            => array( $this, 'new_push' ),
+			'methods'             => 'POST',
+			'permission_callback' => function ( WP_REST_Request $request ) {
+				return $request->get_param( 'secret' ) === hm_time_options( 'foursquare_push_secret' );
+			},
+			'accept_json'         => true,
 		) );
 
 	}
@@ -98,23 +102,16 @@ class HM_Time_API_Foursquare {
 		$push_secret       = $options['foursquare_push_secret'];
 		$google_tz_api_key = $options['google_timezone_api_key'];
 
-		if ( $secret != $push_secret ) {
+		if ( $secret !== $push_secret ) {
 			// send error back
 			exit;
 		}
 
-		// fix mapping issue where its unescaping the values.
-		$checkin        = $this->hm_stripslashes( $checkin );
-		$checkinDecoded = json_decode( $checkin );
+		$wp_user = $this->get_user_by_meta_data( 'hm_time_foursquare_user_id', $user['id'] );
 
-		$user        = $this->hm_stripslashes( $user );
-		$userDecoded = json_decode( $user );
-
-		$wp_user = $this->get_user_by_meta_data( 'hm_time_foursquare_user_id', $userDecoded->id );
-
-		$venue     = $checkinDecoded->venue;
-		$venue_lat = $venue->location->lat;
-		$venue_lng = $venue->location->lng;
+		$venue     = $checkin['venue'];
+		$venue_lat = $venue['location']['lat'];
+		$venue_lng = $venue['location']['lng'];
 
 		$timestamp = time();
 
@@ -128,7 +125,7 @@ class HM_Time_API_Foursquare {
 		$google_tz_api_response = wp_remote_get( $google_tz_api_url );
 		$google_tz_api_body     = json_decode( $google_tz_api_response['body'] );
 		$timezone_id            = $google_tz_api_body->timeZoneId;
-		$location               = $venue->location->city . ', ' . $venue->location->country;
+		$location               = $venue['location']['city'] . ', ' . $venue['location']['country'];
 
 		hm_time_save_profile_fields( $wp_user->ID, $timezone_id, $location );
 
