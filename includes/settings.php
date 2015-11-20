@@ -52,7 +52,7 @@ class HM_Time_Settings{
 	// Geo IP
 	public function geoip_section_text () {
 
-		echo '<p>PLease input your Maxmind Omni API details to use Geo IP with this plugin.</p>';
+		echo '<p>Please input your Maxmind Omni API details to use Geo IP with this plugin.</p>';
 
 	}
 
@@ -73,7 +73,7 @@ class HM_Time_Settings{
 	// Foursquare
 	public function foursquare_section_text () {
 
-		echo '<p>PLease input your Foursquare app details below to enable Foursquare with this plugin.</p>';
+		echo '<p>Please input your Foursquare app details below to enable Foursquare with this plugin.</p>';
 
 	}
 
@@ -94,7 +94,7 @@ class HM_Time_Settings{
 	public function foursquare_redirect_uri_input () {
 
 		$foursquare_redirect_uri = hm_time_options ( 'foursquare_redirect_uri' );
-		echo '<input id="foursquare_redirect_uri" name="hm_time_options[foursquare_redirect_uri]" type="text" value="' . $foursquare_redirect_uri . '" />';
+		echo '<input readonly id="foursquare_redirect_uri" name="hm_time_options[foursquare_redirect_uri]" type="text" value="' . $foursquare_redirect_uri . '" />';
 
 	}
 
@@ -108,7 +108,7 @@ class HM_Time_Settings{
 	public function foursquare_push_url_input () {
 
 		$foursquare_push_url = hm_time_options ( 'foursquare_push_url' );
-		echo '<input id="foursquare_push_url" name="hm_time_options[foursquare_push_url]" type="text" value="' . $foursquare_push_url . '" />';
+		echo '<input readonly id="foursquare_push_url" name="hm_time_options[foursquare_push_url]" type="text" value="' . $foursquare_push_url . '" />';
 
 	}
 

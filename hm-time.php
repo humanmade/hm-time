@@ -41,9 +41,9 @@ function hm_time_install (){
 		'geoip_license_key'			=> '',
 		'foursquare_client_id'		=> '',
 		'foursquare_client_secret' 	=> '',
-		'foursquare_redirect_uri' 	=> '',
+		'foursquare_redirect_uri' 	=> home_url( '/wp-json/hm-time/v1/auth' ),
 		'foursquare_push_secret'	=> '',
-		'foursquare_push_url'		=> '',
+		'foursquare_push_url'		=> admin_url( '/wp-json/hm-time/v1/push' ),
 		'foursquare_push_version'	=> '',
 		'google_timezone_api_key' 	=> ''
 	);
