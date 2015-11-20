@@ -28,7 +28,7 @@ class HM_Time_API_Users {
 	/**
 	 * Retrieve users time data.
 	 */
-	public function get_users( WP_REST_Request $request ) {
+	public function get_users( $request = null ) {
 
 		$args = '';
 
