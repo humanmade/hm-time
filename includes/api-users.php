@@ -66,6 +66,7 @@ class HM_Time_API_Users {
 			$data['workhours']   = get_user_meta( $user->ID, 'hm_time_workhours', true ) ? get_user_meta( $user->ID, 'hm_time_workhours', true ) : array();
 			$data['curr_time']   = '';
 			$data['curr_offset'] = '';
+			$data['avatar']      = get_avatar_url( $user->ID );
 
 			$dateTimeObj = new DateTime( 'NOW' );
 
