@@ -18,10 +18,11 @@ function hm_time_foursqaure_options_input( $user_id, $table_row, $input_text ){
 		$foursquare_link_template = '<a href="https://foursquare.com/oauth2/authenticate?client_id=%s&response_type=code&redirect_uri=%s" class="button">Link to Foursqaure</a>';
 
 		$client_id = hm_time_options( 'foursquare_client_id' );
-		$redirect_uri = hm_time_options( 'foursquare_redirect_uri' );
+		$redirect_uri = home_url( '/wp-json/hm-time/v1/auth' );
+		$redirect_uri = add_query_arg( array( 'user_id' => get_current_user_id() ), $redirect_uri );
 
 		$foursquare_input = sprintf( $foursquare_link_template, $client_id, $redirect_uri );
-		$foursquare_desc  = __('Please connect your foursqaure account so we can get sent user push notifications.');
+		$foursquare_desc  = __('Please connect your Foursquare account so we can get sent user push notifications.');
 
 	} else {
 
