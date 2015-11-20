@@ -18,7 +18,7 @@ class HM_Time_Settings{
 			<form action="options.php" method="post">
 				<?php settings_fields('hm_time_options'); ?>
 				<?php do_settings_sections('hm_time'); ?>
-				<input name="Submit" type="submit" value="Save Changes" />
+				<?php submit_button( 'Save Changes', 'primary', 'submit', false ); ?>
 			</form>
 		</div>
 	<?php
@@ -73,56 +73,56 @@ class HM_Time_Settings{
 	// Foursquare
 	public function foursquare_section_text () {
 
-		echo '<p>PLease input your Foursquare app details below to enable Foursquare with this plugin.</p>';
+		echo '<p>Please input your Foursquare app details below to enable Foursquare with this plugin.</p>';
 
 	}
 
 	public function foursquare_client_id_input () {
 
 		$foursquare_client_id = hm_time_options ( 'foursquare_client_id' );
-		echo '<input id="foursquare_client_id" name="hm_time_options[foursquare_client_id]" type="text" value="' . $foursquare_client_id . '" />';
+		echo '<input class="widefat" id="foursquare_client_id" name="hm_time_options[foursquare_client_id]" type="text" value="' . $foursquare_client_id . '" />';
 
 	}
 
 	public function foursquare_client_secret_input () {
 
 		$foursquare_client_secret = hm_time_options ( 'foursquare_client_secret' );
-		echo '<input id="foursquare_client_secret" name="hm_time_options[foursquare_client_secret]" type="text" value="' . $foursquare_client_secret . '" />';
+		echo '<input class="widefat" id="foursquare_client_secret" name="hm_time_options[foursquare_client_secret]" type="text" value="' . $foursquare_client_secret . '" />';
 
 	}
 
 	public function foursquare_redirect_uri_input () {
 
 		$foursquare_redirect_uri = hm_time_options ( 'foursquare_redirect_uri' );
-		echo '<input id="foursquare_redirect_uri" name="hm_time_options[foursquare_redirect_uri]" type="text" value="' . $foursquare_redirect_uri . '" />';
+		echo '<input class="widefat" id="foursquare_redirect_uri" name="hm_time_options[foursquare_redirect_uri]" type="text" value="' . $foursquare_redirect_uri . '" />';
 
 	}
 
 	public function foursquare_push_secret_input () {
 
 		$foursquare_push_secret = hm_time_options ( 'foursquare_push_secret' );
-		echo '<input id="foursquare_push_secret" name="hm_time_options[foursquare_push_secret]" type="text" value="' . $foursquare_push_secret . '" />';
+		echo '<input class="widefat" id="foursquare_push_secret" name="hm_time_options[foursquare_push_secret]" type="text" value="' . $foursquare_push_secret . '" />';
 
 	}
 
 	public function foursquare_push_url_input () {
 
 		$foursquare_push_url = hm_time_options ( 'foursquare_push_url' );
-		echo '<input id="foursquare_push_url" name="hm_time_options[foursquare_push_url]" type="text" value="' . $foursquare_push_url . '" />';
+		echo '<input class="widefat" id="foursquare_push_url" name="hm_time_options[foursquare_push_url]" type="text" value="' . $foursquare_push_url . '" />';
 
 	}
 
 	public function foursquare_push_version_input () {
 
 		$foursquare_push_version = hm_time_options ( 'foursquare_push_version' );
-		echo '<input id="foursquare_push_version" name="hm_time_options[foursquare_push_version]" type="text" value="' . $foursquare_push_version . '" />';
+		echo '<input class="widefat" id="foursquare_push_version" name="hm_time_options[foursquare_push_version]" type="text" value="' . $foursquare_push_version . '" />';
 
 	}
 
 	public function google_timezone_api_key_input () {
 
 		$google_timezone_api_key = hm_time_options ( 'google_timezone_api_key' );
-		echo '<input id="google_timezone_api_key" name="hm_time_options[google_timezone_api_key]" type="text" value="' . $google_timezone_api_key . '" />';
+		echo '<input class="widefat" id="google_timezone_api_key" name="hm_time_options[google_timezone_api_key]" type="text" value="' . $google_timezone_api_key . '" />';
 
 	}
 
