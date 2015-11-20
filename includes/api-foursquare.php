@@ -34,7 +34,7 @@ class HM_Time_API_Foursquare {
 	public function get_code( WP_REST_Request $request ) {
 
 		$code    = sanitize_text_field( $request->get_param( 'code' ) );
-		$user_id = absint( get_current_user_id() ?: $request->get_param( 'user_id' ) );
+		$user_id = absint( $request->get_param( 'user_id' ) ?: get_current_user_id() );
 
 		if ( empty( $code ) ) {
 			return;
@@ -47,6 +47,11 @@ class HM_Time_API_Foursquare {
 		$push_version            = $options['foursquare_push_version'];
 		$registered_redirect_uri = $options['foursquare_redirect_uri'];
 
+		// Prep response
+		$response = new WP_REST_Response( true, 301, array(
+			'Location' => admin_url( '/profile.php' ),
+		) );
+
 		$access_token_url = add_query_arg( array(
 			'client_id'     => $client_id,
 			'client_secret' => $client_secret,
@@ -55,7 +60,12 @@ class HM_Time_API_Foursquare {
 			'code'          => $code,
 		), 'https://foursquare.com/oauth2/access_token' );
 
-		$access_token_json    = wp_remote_get( $access_token_url );
+		$access_token_json = wp_remote_get( $access_token_url );
+		if ( is_wp_error( $access_token_json ) ) {
+			$response->set_data( array( 'error' => __( 'Could not fetch access token', 'hm-time' ) ) );
+			return $response;
+		}
+
 		$access_token_decoded = json_decode( $access_token_json['body'] );
 		if ( $access_token_decoded->error ) {
 			return $access_token_decoded->error; // Need to send back an error to the user saying that foursquare auth failed.
@@ -67,8 +77,13 @@ class HM_Time_API_Foursquare {
 		}
 
 		// get user details
-		$user_details_url     = 'https://api.foursquare.com/v2/users/self?oauth_token=' . $access_token . '&v=' . $push_version;
-		$user_details_json    = wp_remote_get( $user_details_url );
+		$user_details_url  = 'https://api.foursquare.com/v2/users/self?oauth_token=' . $access_token . '&v=' . $push_version;
+		$user_details_json = wp_remote_get( $user_details_url );
+		if ( is_wp_error( $user_details_json ) ) {
+			$response->set_data( array( 'error' => __( 'Could not fetch user profile', 'hm-time' ) ) );
+			return $response;
+		}
+
 		$user_details_decoded = json_decode( $user_details_json['body'] );
 
 		if ( $user_details_decoded->error ) {
@@ -76,10 +91,6 @@ class HM_Time_API_Foursquare {
 		}
 		// store foursquare user id
 		update_user_meta( $user_id, 'hm_time_foursquare_user_id', $user_details_decoded->response->user->id );
-
-		$response = new WP_REST_Response( true, 301, array(
-			'Location' => admin_url( '/profile.php' ),
-		) );
 
 		return $response;
 	}
@@ -123,9 +134,14 @@ class HM_Time_API_Foursquare {
 		), 'https://maps.googleapis.com/maps/api/timezone/json' );
 
 		$google_tz_api_response = wp_remote_get( $google_tz_api_url );
-		$google_tz_api_body     = json_decode( $google_tz_api_response['body'] );
-		$timezone_id            = $google_tz_api_body->timeZoneId;
-		$location               = $venue['location']['city'] . ', ' . $venue['location']['country'];
+
+		if ( is_wp_error( $google_tz_api_response ) ) {
+			return new WP_REST_Response( false, 202 );
+		}
+
+		$google_tz_api_body = json_decode( $google_tz_api_response['body'] );
+		$timezone_id        = $google_tz_api_body->timeZoneId;
+		$location           = $venue['location']['city'] . ', ' . $venue['location']['country'];
 
 		hm_time_save_profile_fields( $wp_user->ID, $timezone_id, $location );
 
