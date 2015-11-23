@@ -143,7 +143,7 @@ function hm_time_workhours_settings( $user_id, $table_row, $input_text ) {
 	}
 
 	$output .= sprintf( $wh_row, esc_attr( $wh_count ), '', '' );
-	$output .= '</table><input type="button" name="add" value="' . esc_attr__( 'Add New Row', 'hm-time' ) . '" class="tr_clone_add">';
+	$output .= '</table><input type="button" name="add" value="' . esc_attr__( 'Add New Row', 'hm-time' ) . '" class="button secondary tr_clone_add">';
 
 	echo $output;
 
