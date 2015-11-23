@@ -26,7 +26,7 @@ add_action( 'show_user_profile', 'hm_time_user_profile_fields' );
 add_action( 'edit_user_profile', 'hm_time_user_profile_fields' );
 
 function hm_time_admin_js( $hook ) {
-	if ( 'profile.php' != $hook ) {
+	if ( 'profile.php' !== $hook ) {
 		return;
 	}
 
@@ -37,7 +37,7 @@ function hm_time_admin_js( $hook ) {
 add_action( 'admin_enqueue_scripts', 'hm_time_admin_js' );
 
 function hm_time_timezone_settings( $user_id, $table_row, $input_text ) {
-	echo '<h3>' . __( 'Time Zone' ) . '</h3>
+	echo '<h3>' . esc_html__( 'Time Zone', 'hm-time' ) . '</h3>
 		  <table class="form-table">';
 
 	$hm_time_set_method_array = hm_time_timezone_options();
@@ -59,12 +59,12 @@ function hm_time_timezone_settings( $user_id, $table_row, $input_text ) {
 				}
 			}
 
-			$sm_saved = ( $hm_time_set_method_value === $sm_value ? 'checked=checked' : '' );
+			$sm_saved = checked( $hm_time_set_method_value, $sm_value, false );
 
-			$hm_time_set_method .= sprintf( $hm_time_set_method_input, 'hm_time_set_method', $sm_value, $sm_saved, $sm_label );
+			$hm_time_set_method .= sprintf( $hm_time_set_method_input, 'hm_time_set_method', esc_attr( $sm_value ), $sm_saved, esc_html( $sm_label ) );
 		}
 
-		printf( $table_row, 'hm_time_set_method', __( 'Set method' ), $hm_time_set_method, __( 'Please select how you want your timezone to be updated' ) );
+		printf( $table_row, 'hm_time_set_method', esc_html__( 'Set method', 'hm-time' ), $hm_time_set_method, esc_html__( 'Please select how you want your timezone to be updated', 'hm-time' ) );
 
 	} else {
 
@@ -82,15 +82,15 @@ function hm_time_timezone_settings( $user_id, $table_row, $input_text ) {
 		$hm_time_manual_inputs .= '<optgroup label="' . $lkey . '">';
 		if ( is_array( $lvalue ) ) {
 			foreach ( $lvalue as $value => $label ) {
-				$selected = ( $hm_time_manual_value == $value ? 'selected="selected"' : '' );
-				$hm_time_manual_inputs .= '<option value="' . $value . '" ' . $selected . '>' . $label . '</option>';
+				$selected = selected( $hm_time_manual_value, $value, false );
+				$hm_time_manual_inputs .= '<option value="' . esc_attr( $value ) . '" ' . $selected . '>' . esc_html( $label ) . '</option>';
 			}
 		}
 		$hm_time_manual_inputs .= '</optgroup>';
 	}
 
 	$hm_time_manual = '<select name="hm_time_timezone">' . $hm_time_manual_inputs . '</select>';
-	printf( $table_row, 'hm_time_timezone', __( 'Manual Selection' ), $hm_time_manual, __( 'Please select your timezone' ) );
+	printf( $table_row, 'hm_time_timezone', esc_html__( 'Manual Selection', 'hm-time' ), $hm_time_manual, esc_html__( 'Please select your timezone', 'hm-time' ) );
 
 	echo '</table>';
 
@@ -98,13 +98,13 @@ function hm_time_timezone_settings( $user_id, $table_row, $input_text ) {
 
 function hm_time_location_settings( $user_id, $table_row, $input_text ) {
 
-	$output = '<h3>' . __( 'Location' ) . '</h3>
+	$output = '<h3>' . esc_html__( 'Location', 'hm-time' ) . '</h3>
 		  <table class="form-table">';
 
 	$hm_time_location_value = get_user_meta( $user_id, 'hm_time_location', true );
-	$hm_time_location_input = '<input type="text" name="hm_time_location" value="' . $hm_time_location_value . '"/>';
+	$hm_time_location_input = '<input type="text" name="hm_time_location" value="' . esc_attr( $hm_time_location_value ) . '"/>';
 
-	$output .= sprintf( $table_row, 'hm_time_location', __( 'City/ Country' ), $hm_time_location_input, '' );
+	$output .= sprintf( $table_row, 'hm_time_location', esc_html__( 'City / Country', 'hm-time' ), $hm_time_location_input, '' );
 	$output .= '</table>';
 
 	echo $output;
@@ -112,10 +112,10 @@ function hm_time_location_settings( $user_id, $table_row, $input_text ) {
 }
 
 function hm_time_workhours_settings( $user_id, $table_row, $input_text ) {
-	$output = '<h3>' . __( 'Work Hours' ) . '</h3>
-		  <p>Shown in 24 hour clock</p>
+	$output = '<h3>' . esc_html__( 'Work Hours', 'hm-time' ) . '</h3>
+		  <p>' . esc_html__( 'Shown in 24 hour clock', 'hm-time' ) . '</p>
 		  <table id="work_hours" class="form-table">
-			<tr><th>Start</th><th>End</th></tr>
+			<tr><th>' . esc_html__( 'Start', 'hm-time' ) . '</th><th>' . esc_html__( 'End', 'hm-time' ) . '</th></tr>
 		  ';
 
 	$hm_wh_values = get_user_meta( $user_id, 'hm_time_workhours', true );
@@ -135,15 +135,15 @@ function hm_time_workhours_settings( $user_id, $table_row, $input_text ) {
 				continue;
 			}
 
-			$output .= sprintf( $wh_row, $wh_count, $wh_times['start'], $wh_times['end'] );
+			$output .= sprintf( $wh_row, esc_attr( $wh_count ), esc_attr( $wh_times['start'] ), esc_attr( $wh_times['end'] ) );
 			$wh_count++;
 
 		}
 
 	}
 
-	$output .= sprintf( $wh_row, $wh_count, '', '' );
-	$output .= '</table><input type="button" name="add" value="Add New Row" class="tr_clone_add">';
+	$output .= sprintf( $wh_row, esc_attr( $wh_count ), '', '' );
+	$output .= '</table><input type="button" name="add" value="' . esc_attr__( 'Add New Row', 'hm-time' ) . '" class="tr_clone_add">';
 
 	echo $output;
 
