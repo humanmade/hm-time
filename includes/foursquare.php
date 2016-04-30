@@ -1,15 +1,15 @@
 <?php
 
-function hm_time_foursqaure_options( $hm_time_set_method_array ) {
+function hm_time_foursquare_options( $hm_time_set_method_array ) {
 
 	$hm_time_set_method_array['foursquare'] = 'Foursquare';
 	return $hm_time_set_method_array;
 
 }
 
-add_filter( 'hm_time_set_method_array', 'hm_time_foursqaure_options', 10, 1 );
+add_filter( 'hm_time_set_method_array', 'hm_time_foursquare_options', 10, 1 );
 
-function hm_time_foursqaure_options_input( $user_id, $table_row, $input_text ) {
+function hm_time_foursquare_options_input( $user_id, $table_row, $input_text ) {
 	// Set Foursquare username input
 	$foursquare_user_id = get_user_meta( $user_id, 'hm_time_foursquare_user_id', true );
 
@@ -19,7 +19,7 @@ function hm_time_foursqaure_options_input( $user_id, $table_row, $input_text ) {
 		$client_id    = hm_time_options( 'foursquare_client_id' );
 		$redirect_uri = home_url( '/wp-json/hm-time/v1/auth' );
 		$redirect_uri = add_query_arg( array( 'user_id' => $user_id ), $redirect_uri );
-		$link_text    = esc_html__( 'Link to Foursqaure', 'hm-time' );
+		$link_text    = esc_html__( 'Link to Foursquare', 'hm-time' );
 
 		$foursquare_input = sprintf( $foursquare_link_template, $client_id, $redirect_uri, $link_text );
 		$foursquare_desc  = esc_html__( 'Please connect your Foursquare account so we can get sent user push notifications.', 'hm-time' );
@@ -35,4 +35,4 @@ function hm_time_foursqaure_options_input( $user_id, $table_row, $input_text ) {
 
 }
 
-add_action( 'hm_time_add_options', 'hm_time_foursqaure_options_input', 10, 3 );
+add_action( 'hm_time_add_options', 'hm_time_foursquare_options_input', 10, 3 );

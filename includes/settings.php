@@ -161,7 +161,7 @@ class HM_Time_Settings{
 
 		} else {
 
-			$set_method = '<p>Only method currently is <strong>Manual</strong>. Please insert Foursqaure app or GeoIP api details to have more options.</p>';
+			$set_method = '<p>Only method currently is <strong>Manual</strong>. Please insert Foursquare app or GeoIP api details to have more options.</p>';
 
 		}
 
